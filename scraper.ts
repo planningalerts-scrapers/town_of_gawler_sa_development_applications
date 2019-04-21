@@ -62,7 +62,11 @@ async function insertRow(database, developmentApplication) {
 
 // Parses the development applications.
 
+declare const process: any;
+
 async function main() {
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+    
     // Ensure that the database exists.
 
     let database = await initializeDatabase();
