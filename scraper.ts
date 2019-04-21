@@ -17,6 +17,8 @@ const DevelopmentApplicationMainUrl = "https://eservices.gawler.sa.gov.au/eservi
 const DevelopmentApplicationSearchUrl = "https://eservices.gawler.sa.gov.au/eservice/daEnquiry.do?number=&lodgeRangeType=on&dateFrom={0}&dateTo={1}&detDateFromString=&detDateToString=&streetName=&suburb=0&unitNum=&houseNum=0%0D%0A%09%09%09%09%09&planNumber=&strataPlan=&lotNumber=&propertyName=&searchMode=A&submitButton=Search";
 const CommentUrl = "mailto:council@gawler.sa.gov.au";
 
+declare const process: any;
+
 // Sets up an sqlite database.
 
 async function initializeDatabase() {
@@ -62,11 +64,7 @@ async function insertRow(database, developmentApplication) {
 
 // Parses the development applications.
 
-declare const process: any;
-
 async function main() {
-    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-    
     // Ensure that the database exists.
 
     let database = await initializeDatabase();
@@ -75,7 +73,7 @@ async function main() {
 
     console.log(`Retrieving page: ${DevelopmentApplicationMainUrl}`);
     let jar = request.jar();  // this cookie jar will end up containing the JSESSIONID_live cookie after the first request; the cookie is required for the second request
-    await request({ url: DevelopmentApplicationMainUrl, jar: jar, rejectUnauthorized: false });
+    await request({ url: DevelopmentApplicationMainUrl, jar: jar, rejectUnauthorized: false, proxy: process.env.MORPH_PROXY });
 
     // Retrieve the results of a search for the last month.
 
@@ -83,7 +81,7 @@ async function main() {
     let dateTo = encodeURIComponent(moment().format("DD/MM/YYYY"));
     let developmentApplicationSearchUrl = DevelopmentApplicationSearchUrl.replace(/\{0\}/g, dateFrom).replace(/\{1\}/g, dateTo);
     console.log(`Retrieving search results for: ${developmentApplicationSearchUrl}`);
-    let body = await request({ url: developmentApplicationSearchUrl, jar: jar, rejectUnauthorized: false });  // the cookie jar contains the JSESSIONID_live cookie
+    let body = await request({ url: developmentApplicationSearchUrl, jar: jar, rejectUnauthorized: false, proxy: process.env.MORPH_PROXY });  // the cookie jar contains the JSESSIONID_live cookie
     let $ = cheerio.load(body);
 
     // Parse the search results.
