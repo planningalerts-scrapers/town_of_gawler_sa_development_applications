@@ -15,7 +15,6 @@ sqlite3.verbose();
 
 const DevelopmentApplicationMainUrl = "https://eservices.gawler.sa.gov.au/eservice/daEnquiryInit.do?doc_typ=4&nodeNum=3228";
 const DevelopmentApplicationSearchUrl = "https://eservices.gawler.sa.gov.au/eservice/daEnquiry.do?number=&lodgeRangeType=on&dateFrom={0}&dateTo={1}&detDateFromString=&detDateToString=&streetName=&suburb=0&unitNum=&houseNum=0%0D%0A%09%09%09%09%09&planNumber=&strataPlan=&lotNumber=&propertyName=&searchMode=A&submitButton=Search";
-const CommentUrl = "mailto:council@gawler.sa.gov.au";
 
 declare const process: any;
 
@@ -25,7 +24,7 @@ async function initializeDatabase() {
     return new Promise((resolve, reject) => {
         let database = new sqlite3.Database("data.sqlite");
         database.serialize(() => {
-            database.run("create table if not exists [data] ([council_reference] text primary key, [address] text, [description] text, [info_url] text, [comment_url] text, [date_scraped] text, [date_received] text, [on_notice_from] text, [on_notice_to] text)");
+            database.run("create table if not exists [data] ([council_reference] text primary key, [address] text, [description] text, [info_url] text, [date_scraped] text, [date_received] text, [on_notice_from] text, [on_notice_to] text)");
             resolve(database);
         });
     });
@@ -35,13 +34,12 @@ async function initializeDatabase() {
 
 async function insertRow(database, developmentApplication) {
     return new Promise((resolve, reject) => {
-        let sqlStatement = database.prepare("insert or replace into [data] values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        let sqlStatement = database.prepare("insert or replace into [data] values (?, ?, ?, ?, ?, ?, ?, ?)");
         sqlStatement.run([
             developmentApplication.applicationNumber,
             developmentApplication.address,
             developmentApplication.reason,
             developmentApplication.informationUrl,
-            developmentApplication.commentUrl,
             developmentApplication.scrapeDate,
             developmentApplication.receivedDate,
             null,
@@ -110,7 +108,6 @@ async function main() {
                 address: address,
                 reason: reason,
                 informationUrl: DevelopmentApplicationMainUrl,
-                commentUrl: CommentUrl,
                 scrapeDate: moment().format("YYYY-MM-DD"),
                 receivedDate: receivedDate.isValid() ? receivedDate.format("YYYY-MM-DD") : ""
             });
