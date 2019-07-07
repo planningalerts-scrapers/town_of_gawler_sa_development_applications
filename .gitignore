@@ -5,7 +5,10 @@ data.sqlite
 node_modules
 package-lock.json
 
-# Ignore most Visual Studio Code files.
+# Ignore Visual Studio Code files.
 .vscode/*
 !.vscode/launch.json
 !.vscode/tasks.json
+
+results_other.yml
+results_ruby.yml
